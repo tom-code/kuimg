@@ -1,5 +1,6 @@
-Create docker image usable with kubernetes on machine without docker
+### Create docker image usable with kubernetes on machine without docker
 
+This is intended for minimal images "from scratch" which contains just application binary and are not dependent on different layers with OS.
 
 Following command creates image from contents of src_dir to out.tar with tag testx:1
 ```
