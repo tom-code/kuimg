@@ -115,27 +115,27 @@ func tar_dir(dir string, f *os.File) bool {
 
     for _, file := range files {
         info, err := os.Stat(file)
-        
+
         data, err := ioutil.ReadFile(file)
         if err != nil {
             panic(err)
         }
         fmt.Println(file)
-		hdr := &tar.Header{
-			Name: file,
-			Mode: int64(info.Mode()),
+        hdr := &tar.Header{
+            Name: file,
+            Mode: int64(info.Mode()),
             Size: int64(len(data)),
             ModTime: time.Now(),
-		}
-		if err := tw.WriteHeader(hdr); err != nil {
-			panic(err)
-		}
-		if _, err := tw.Write(data); err != nil {
-			panic(err)
-		}
-	}
-	if err := tw.Close(); err != nil {
-		panic(err)
+        }
+        if err := tw.WriteHeader(hdr); err != nil {
+            panic(err)
+        }
+        if _, err := tw.Write(data); err != nil {
+            panic(err)
+        }
+    }
+    if err := tw.Close(); err != nil {
+        panic(err)
     }
     os.Chdir(start_dir)
     f.Close()
@@ -175,17 +175,17 @@ func main() {
     dir_temp += "/"
 
     tar_dir(in_directory, tar_temp)
-    has := hash_file(tar_temp.Name())
+    hash_of_tar := hash_file(tar_temp.Name())
 
-    os.MkdirAll(dir_temp+has, 0777)
-    copy_file(tar_temp.Name(), dir_temp+has+"/layer.tar")
+    os.MkdirAll(dir_temp+hash_of_tar, 0777)
+    copy_file(tar_temp.Name(), dir_temp+hash_of_tar+"/layer.tar")
 
     ma := Manifest{ 
         Architecture:"amd64",
         Os: "linux",
-        RootFS:ManifestRootFS{Type: "layers", Diff_ids:[]string{"sha256:"+has}},
-        ContainerConfig: ContainerConfig{Image: "sha256:"+has},
-        Config: ContainerConfig{Image: "sha256:"+has},
+        RootFS:ManifestRootFS{Type: "layers", Diff_ids:[]string{"sha256:"+hash_of_tar}},
+        ContainerConfig: ContainerConfig{Image: "sha256:"+hash_of_tar},
+        Config: ContainerConfig{Image: "sha256:"+hash_of_tar},
     }
     ma_json, _ := json.Marshal(ma)
     conf_hash := hash_data(ma_json)
@@ -197,7 +197,7 @@ func main() {
     manifest_struct := []MainManifest{{
         Config: conf_hash+".json",
         RepoTags: []string{tag},
-        Layers: []string{has+"/layer.tar"},
+        Layers: []string{hash_of_tar+"/layer.tar"},
     }}
     manifest, _ := json.Marshal(manifest_struct)
 
