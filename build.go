@@ -2,7 +2,7 @@
 package main
 
 import (
-	"time"
+    "time"
     "fmt"
     "encoding/json"
     "encoding/hex"
@@ -24,11 +24,11 @@ type ManifestRootFS struct {
 }
 
 type Manifest struct {
-    Architecture string `json:"architecture"`
-    Os   string         `json:"os"`
-    RootFS ManifestRootFS `json:"rootfs"`
-    ContainerConfig ContainerConfig  `json:"container_config"`
-    Config ContainerConfig  `json:"config"`
+    Architecture string             `json:"architecture"`
+    Os   string                     `json:"os"`
+    RootFS ManifestRootFS           `json:"rootfs"`
+    ContainerConfig ContainerConfig `json:"container_config"`
+    Config ContainerConfig          `json:"config"`
 }
 
 func copy_file(src, dst string) bool {
@@ -165,7 +165,6 @@ func main() {
     if err != nil {
         panic(err)
     }
-
     defer os.Remove(tar_temp.Name())
 
     dir_temp, err := ioutil.TempDir("", "img_dir")
@@ -174,9 +173,6 @@ func main() {
     }
     defer os.RemoveAll(dir_temp)
     dir_temp += "/"
-
-
-    os.Remove("x.tar")
 
     tar_dir(in_directory, tar_temp)
     has := hash_file(tar_temp.Name())
